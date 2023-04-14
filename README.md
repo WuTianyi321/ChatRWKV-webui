@@ -9,3 +9,4 @@
 目前各项设置是直接写在app.py中的，模型下载好后修改args.MODEL_NAME的值为你下载的模型的路径即可。
 
 目前generate标签页是不起作用的。
+![image](https://user-images.githubusercontent.com/48122470/232069779-e84db9bb-86d1-4a10-8a3c-7f5674631f49.png)
