@@ -4,7 +4,7 @@ import os,json,types
 from typing import Optional, List, Tuple
 import copy
 os.environ["RWKV_JIT_ON"] = '1' # '1' or '0', please use torch 1.13+ and benchmark speed
-os.environ["RWKV_CUDA_ON"] = '1' # '1' to compile CUDA kernel (10x faster), requires c++ compiler & cuda libraries
+os.environ["RWKV_CUDA_ON"] = '0' # '1' to compile CUDA kernel (10x faster), requires c++ compiler & cuda libraries
 from rwkv.model import RWKV
 from rwkv.utils import PIPELINE,PIPELINE_ARGS
 css = "style.css"
