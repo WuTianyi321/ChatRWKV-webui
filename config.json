@@ -1,0 +1,8 @@
+{
+    "max_length": 2048,
+    "top_p": 0.6,
+    "temperature": 1,
+    "memory_limit": -1.0,
+    "alpha_frequency": 0.2,
+    "alpha_presence": 0.2
+  }
