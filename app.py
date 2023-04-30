@@ -341,5 +341,6 @@ def create_ui():
 
     return demo
 
-create_ui().queue().launch(server_name='0.0.0.0')
+# create_ui().queue().launch(server_name='0.0.0.0')
+create_ui().queue().launch()
 
