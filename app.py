@@ -13,17 +13,28 @@ CHUNK_LEN = 256
 AVOID_REPEAT = '，：？！'
 args = types.SimpleNamespace()
 args.strategy = 'cuda fp16'
+# args.strategy = 'cuda fp16i8'
 # args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Pile-169M-20220807-8023'
 # args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Raven-1B5-v8-Eng-20230408-ctx4096'
-args.strategy = 'cuda fp16i8'
 # args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Raven-7B-v8-Eng49%-Chn50%-Other1%-20230412-ctx4096'
 # args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Raven-7B-v8-Eng49%-Chn50%-Other1%-20230412-AltVersion-ctx4096'
-args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Raven-7B-v9-Eng99%-Other1%-20230412-ctx8192'
+# args.MODEL_NAME = '/home/wty/ChatModel/RWKVModel/RWKV-4-Raven-7B-v9-Eng99%-Other1%-20230412-ctx8192'
+args.MODEL_NAME = 'RWKV-x060-World-1B6-v2.1-20240328-ctx4096'
 model = RWKV(model=args.MODEL_NAME, strategy=args.strategy)
-pipeline = PIPELINE(model, f"{current_path}/20B_tokenizer.json")
-END_OF_TEXT = 0
-END_OF_LINE = 187
-END_OF_LINE_2 = 535
+# pipeline = PIPELINE(model, f"{current_path}/20B_tokenizer.json")
+# pipeline = PIPELINE(model, "rwkv_vocab_v20230424")
+if 'world/' in args.MODEL_NAME or '-World-' in args.MODEL_NAME:
+    pipeline = PIPELINE(model, "rwkv_vocab_v20230424")
+    END_OF_TEXT = 0
+    END_OF_LINE = 11
+else:
+    pipeline = PIPELINE(model, f"{current_path}/20B_tokenizer.json")
+    END_OF_TEXT = 0
+    END_OF_LINE = 187
+    END_OF_LINE_2 = 535
+# END_OF_TEXT = 0
+# END_OF_LINE = 187
+# END_OF_LINE_2 = 535
 CHAT_LEN_SHORT = 40
 CHAT_LEN_LONG = 150
 # English Chinese
@@ -41,6 +52,19 @@ init_prompt = init_prompt.strip().split('\n')
 for c in range(len(init_prompt)):
     init_prompt[c] = init_prompt[c].strip().strip('\u3000').strip('\r')
 init_prompt = '\n' + ('\n'.join(init_prompt)).strip() + '\n\n'
+
+def save_config():
+    config = {
+        'init_prompt':init_prompt,
+        'alpha_presence':alpha_presence,
+        'alpha_frequency':alpha_frequency,
+        'CHAT_LEN_SHORT':CHAT_LEN_SHORT,
+        'CHAT_LEN_LONG':CHAT_LEN_LONG,
+        'END_OF_TEXT':END_OF_TEXT,
+        'END_OF_LINE':END_OF_LINE,
+    }
+    with open('config.json','w') as f:
+        json.dump(config,f,indent=4)
 
 AVOID_REPEAT_TOKENS = []
 for i in AVOID_REPEAT:
@@ -292,7 +316,8 @@ def init_chat_interface(chat_init_prompt):
     init_tokens=pipeline.encode(chat_init_prompt)
     tokens=init_tokens
     while len(tokens)>0:
-        out,init_state=model.forward(tokens[:CHUNK_LEN],init_state)
+        # out,init_state=model.forward(tokens[:CHUNK_LEN],init_state)
+        out,init_state=model.forward(tokens[:CHUNK_LEN],None)
         tokens = tokens[CHUNK_LEN:]
     init_ctx=Context(init_state,init_state,[])
     init_model_state=init_state
@@ -301,6 +326,8 @@ def init_chat_interface(chat_init_prompt):
         model_state=gr.State(init_state)
         init_model_state=gr.State(init_state)
         last_model_state=gr.State(model_state)
+        # init_model_state=init_state
+        # last_model_state=model_state
         last_out=gr.State(out)
         chatbot = gr.Chatbot(elem_id='chatbot', show_label=False).style(height=450)
         message = gr.Textbox(

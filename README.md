@@ -11,6 +11,8 @@
 目前generate标签页是不起作用的。
 ![image](https://user-images.githubusercontent.com/48122470/232069779-e84db9bb-86d1-4a10-8a3c-7f5674631f49.png)
 
+gradio版本请用3.42
+
 未来计划：
 1. generate完成
 2. 预设prompt
